@@ -1,0 +1,346 @@
+\def\CTeXPreproc{Created by ctex v0.2.12, don't edit!}
+%\documentclass[a4paper,11pt]{article}
+%\documentclass[11pt,draftcls,onecolumn]{IEEEtran}
+%\documentclass[11pt,draftclsnofoot,onecolumn]{IEEEtran}
+%\documentclass[journal]{IEEETran}
+\documentclass[conference]{IEEEtran}
+
+\usepackage{indentfirst,flushend}
+\usepackage{amssymb,bm,mathrsfs,bbm,amscd,amsmath,amsthm}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{cases}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{remark}{Remark}
+\usepackage{multirow}
+\usepackage{cite}
+\usepackage{citesort}
+\usepackage{multicol}
+%\renewcommand{\thefootnote}{}
+\usepackage[nooneline,flushleft]{caption2}
+\usepackage{algorithm,clrscode}
+\usepackage{algorithmic}
+\usepackage{cases}
+%\usepackage{geometry,cases}
+%\geometry{left=1.4cm,right=1.4cm,top=1.5cm,bottom=1.5cm}
+\usepackage{stfloats}
+\newcounter{TempEqCnt}
+\usepackage{subfigure}
+\setlength{\abovedisplayskip}{3pt} %Narrow the distance between the formulas and both before and after the text.
+\setlength{\belowdisplayskip}{3pt} %Narrow the distance between the formulas and both before and after the text.
+
+%------------------------- 列表与图表距离设置 -----------------------%
+%\setlength{\topsep}{3pt plus1pt minus2pt}           % 第一个item和前面版落间的距离
+%\setlength{\partopsep}{3pt plus1pt minus2pt}        % 当在一个新页开始时加到
+%                                                    % \topsep的额外空间
+%\setlength{\itemsep}{3pt plus1pt minus2pt}          % 连续items之间的距离.
+%\setlength{\floatsep}{10pt plus 3pt minus 2pt}      % 图形之间或图形与正文之间的距离
+%\setlength{\abovecaptionskip}{2pt plus1pt minus1pt} % 图形中的图与标题之间的距离
+%\setlength{\belowcaptionskip}{3pt plus1pt minus2pt} % 表格中的表与标题之间的距离
+
+\begin{document}
+
+\title{Coordinated Multicell Precoding for Weighted Sum Rate Maximization with Per-Cell EE Constraints}
+%\author{Shiwen~He, Yongming~Huang,~\IEEEmembership{Member,~IEEE}, Jiaheng Wang,~\IEEEmembership{Member,~IEEE}, Shi~Jin,~\IEEEmembership{Member,~IEEE}, Haiming~Wang,~\IEEEmembership{Member,~IEEE}, and Luxi~Yang,~\IEEEmembership{Member,~IEEE}
+%\thanks{S. He, Y. Huang, J. Wang, S. Jin and H. Wang are with the School of Information Science and Engineering, Southeast University, Nanjing 210096, China. (Email:\{hesw01, huangym, jhwang, jinshi, hmwang， lxyang\}@seu.edu.cn).}}
+
+%\vspace{-1.1 in}
+\author{\IEEEauthorblockN{Shiwen~He\IEEEauthorrefmark{1}\IEEEauthorrefmark{2}, Yongming~Huang\IEEEauthorrefmark{1}, Jiaheng Wang\IEEEauthorrefmark{1}, Haiming~Wang\IEEEauthorrefmark{1}\IEEEauthorrefmark{2}, Shi~Jin\IEEEauthorrefmark{1}, and Luxi~Yang\IEEEauthorrefmark{1}}
+\IEEEauthorblockA{\IEEEauthorrefmark{1}School of Information Science and Engineering, Southeast University, Nanjing 210096, China.\\
+\IEEEauthorrefmark{2}The State Key Laboratory of Millimeter Waves, Department of Radio Engineering, Southeast University.\\
+Email: \{hesw01, huangym, jhwang, hmwang, jinshi, lxyang\}@seu.edu.cn}
+%\IEEEauthorblockA{\IEEEauthorrefmark{2}The State Key Laboratory of Millimeter Waves, Department of Radio Engineering, Southeast University.}
+}
+\maketitle
+\begin{abstract}
+Spectral efficiency (SE) and energy efficiency (EE) are both essential in future wireless communications. To improve the system performance on these two metrics, in this paper we consider the weighted sum rate maximization (WSRMax) problem subject to per-cell EE constraints and per-BS transmit power constraints in multicell multiuser downlink systems. This problem is difficult in its original form due to the introduction of new EE constraints. We first reveal that the original problem can be transformed into an equivalent parameterized polynomial form by introducing some auxiliary variables. By exploiting the concavity property with respect to each variable in the equivalent problem, an efficient block coordinate ascent algorithm is then proposed with guaranteed convergence property. Numerical results show that compared with the conventional WSRMax algorithm, in addition to fulfilling the EE requirement of each cell, our algorithm achieves a better system EE performance at the cost of a slight sum rate performance loss at a certain region and offers a new insight on the SE-EE tradeoff in wireless communication systems.
+
+\end{abstract}
+
+\begin{IEEEkeywords}
+Weighted Sum Rate Maximization, Per-Cell EE Constraints, Multiple-Input-Multiple-Output
+\end{IEEEkeywords}
+
+
+%\section{Introduction}
+\section*{\sc \uppercase\expandafter{\romannumeral1}. Introduction}
+
+
+In order to satisfy the demands of ever increasing data rates, better quality of service (QoS) and enhanced coverage in future cellular communication systems, multiple input multiple output (MIMO) and coordinated multiple point (CoMP) technologies have been extensively studied in both the academia and industry in the past few years~\cite{MagRusek2013}. On the one hand, the weighted sum rate maximization (WSRMax) problem is a critical performance metric for transmission method designs subject to transmit power constraints~\cite{TWCChristensen2008,TSPShi2011,TSPWeerad2013}. In~\cite{TWCChristensen2008,TSPShi2011}, the WSRMax problem has been investigated for MIMO channels by transforming the original problem to an equivalent weighted sum mean square error minimization (WMMSE) problem with some specially chosen weight matrices. The sequential convex approximation method was used to study the WSRMax problem for multi-cell multiple input single output (MISO) downlink system in~\cite{TSPWeerad2013}. Note that these above works only aims to maximize the spectral efficiency (SE) without considerig the energy efficiency (EE) constraints.
+
+On the other hand, the growth of wireless traffic has also been companied by a rapid increase in the energy consumption. As a result, a tremendous number of green technologies/methods have been proposed in the literature for maximizing the EE of wireless communication systems~\cite{SurverFeng2013,TWCNg2012,TWCNg2013,ICCPrabu2010,PIMRCLi2013,TWCXiong2013,TCOMHe2013}. In~\cite{TWCNg2012,TWCNg2013}, an energy efficient resource allocation algorithm was developed in an orthogonal frequency division multiple access (OFDMA) downlink network with fixed beamforming transmission or hybrid energy harvesting at base stations (BSs). Also, a water-filling based energy-efficient power allocation algorithm was proposed for a point-to-point single-input single-output $N$ subcarrier OFDM system~\cite{ICCPrabu2010}. In~\cite{PIMRCLi2013}, the authors proposed a method to maximize the system EE with individual user rate constraints. C. Xiong \emph{et al} have studied energy efficient design problem for downlink OFDMA with delay-sensitive traffic~\cite{TWCXiong2013}. However, they did not take the per-BS power constraints or the joint optimization of the transmit beamformers and power allocation into account.
+
+Note that the above works mainly focus on the objective of  maximizing either the spectral efficiency (SE) or the EE. However, these two metrics are both essential in the future wireless communication systems. In~\cite{TCOMHe2013}, the system EE maximization problem with per-BS transmit power constraints was investigated, and the authors have shown that the system EE increases at the cost of the reduction of system throughput in the middle-high transmit power region. Motivated by these observations, in this letter we formulate a new WSRMax problem with additional per-cell EE and per-BS power constraints in the multicell multiuser MIMO system to achieve reasonable tradeoff between  the SE and EE. The optimization problem is difficult to tackle due to its nonconvex nature. To address it, we first transform the new WSRMax problem into a weighted polynomial optimization problem by introducing some auxiliary variables. Then, a block coordinated ascent optimization algorithm is proposed to solve the equivalent problem by exploiting its concavity with respect to each optimization variable. The convergence of the developed method is also proved. Numerical results show that compared with the conventional WSRMax algorithm, our algorithm achieves a better system EE performance while fulfilling individual EE requirement of each cell, at the cost of a slight sum rate performance loss at a certain regime, and provides a new insight on the SE-EE tradeoff in wireless communication systems.
+%
+%\section{System Model}
+\section*{\sc \uppercase\expandafter{\romannumeral2}. System Model}
+
+Consider a $K$-cell MU-MIMO downlink system where each cell includes one multiple antenna BS and a plurality of multiple antenna users. Without loss of generality, we denote the $k$-th user in cell $j$ as User-$\left(j,k\right)$ and the BS in cell $m$ as BS-$m$. BS-$j$ is equipped with $M_{j}$ transmit antennas and serves $I_{j}$ users in cell $j$. User-$\left(j,k\right)$ is equipped with $N_{j,k}$ antennas. The received signal of User-$\left(j,k\right)$ is then expressed as follows
+\begin{equation}\label{EngergyEfficientContraint1}
+\bm{y}_{j,k}=\sum_{m=1}^{K}\bm{H}_{m,j,k}\sum_{n=1}^{I_{m}}\bm{W}_{m,n}\bm{x}_{m,n}+\bm{z}_{j,k},
+\end{equation}
+where $\bm{H}_{m,j,k}\in\mathbb{C}^{N_{j,k}\times M_{m}}$ denotes the flat fading channel coefficient between BS-$m$ and User-$\left(j,k\right)$, including both the large scale fading, shadow fading, and the small scale fading, $\bm{W}_{j,k}\in\mathbb{C}^{M_{j}\times d_{j,k}}$ denotes the beamforming matrix for User-$\left(j,k\right)$, $\bm{x}_{j,k}\in\mathbb{C}^{d_{j,k}\times 1}$ denotes the information signal intended for User-$\left(j,k\right)$ with distribution $\mathcal{CN}$$\left(\bm{0}, \bm{I}\right)$, $d_{j,k}$ denotes the number of the data streams for User-$\left(j,k\right)$, and $\bm{z}_{j,k}\in\mathbb{C}^{N_{j,k}\times 1}$ denotes the additive white Gaussian noise with distribution $\mathcal{CN}$$\left(\bm{0},\sigma_{j,k}^{2}\bm{I}\right)$. To consider the EE requirement of each cell or BS, the per-cell EE measure for cell-$j$, is first defined as\footnote{We would like point out that the energy consumption generated by the cooperation between coordinated BS, such as backhaul and signal processing, is not taken into our current optimization problem. In the future work, we would like to further investigate the affect of them on the energy efficiency. }
+\begin{equation}\label{EngergyEfficientContraint2}
+f_{j}\left(\bm{W}\right)=\frac{\sum_{k=1}^{I_{j}}\alpha_{j,k}r_{j,k}}
+{\varpi_{j}\sum_{k=1}^{I_{j}}Tr\left(\bm{W}_{j,k}\bm{W}_{j,k}^{H}\right)
++M_{j}P_{c}+P_{0}}, \forall j,
+\end{equation}
+in terms of bit-per-Joule, where $Tr\left(\bm{A}\right)$ denotes the trace of matrix $\bm{A}$, $\bm{W}$ denote the collection of all the precoders, $P_{c}$ is the constant circuit power consumption per antenna, $P_{0}$ is the basic power consumed at the BS independent of the number of transmit antennas~\cite{TWCNg2012,TWCNg2013}, $\varpi_{j}\geq 1$ is a constant which accounts for the inefficiency of the power amplifier of BS-$j$, and $r_{j,k}$ denotes the instantaneous rate of User-$\left(j,k\right)$, and is calculated as~\cite{TWCChristensen2008}
+%including power dissipations in the transmit filter, mixer, frequency synthesizer, which are independent of the actual transmitted power
+\begin{equation}\label{EngergyEfficientContraint3}
+r_{j,k}=\log \left|\bm{I}+\bm{H}_{j,j,k}\bm{W}_{j,k}\bm{W}_{j,k}^{H}\bm{H}_{j,j,k}^{H}
+\bm{R}_{j,k}^{-1}\right|,
+\end{equation}
+in unit of Nat/s/Hz, where $\left|\bm{A}\right|$ denotes the determinant of matrix $\bm{A}$, $\bm{R}_{j,k}$ denotes the interference-plus-noise and is given by
+\begin{equation}\label{EngergyEfficientContraint4}
+\bm{R}_{j,k}=\sum_{\left(m,n\right)\neq\left(j,k\right)}\bm{H}_{m,j,k}\bm{W}_{m,n}\bm{W}_{m,n}^{H}\bm{H}_{m,jk}^{H}+
+\sigma_{j,k}^{2}\bm{I}.
+\end{equation}
+The corresponding system EE can then be calculated as a weighted sum EE (WSEE) given by $\sum_{j=1}^{K}\theta_{j}f_{j}\left(\bm{W}\right)$, where $\theta_{j}$ denotes the EE priority of BS-$j$. Different from the conventional WSRMax problem, here the per-cell EE constraints are also considered into the WSRMax optimization problem defined as
+\begin{equation}\label{EngergyEfficientContraint5}
+\begin{split}
+&\max_{\bm{W}}~\sum_{j=1}^{K}\sum_{k=1}^{I_{j}}\alpha_{j,k}r_{j,k}\\
+~s.t.~&f_{j}\left(\bm{W}\right)\geq \eta_{j},
+~\sum_{k=1}^{I_{j}}Tr\left(\bm{W}_{j,k}\bm{W}_{j,k}^{H}\right)\leq P_{j},\forall j,
+\end{split}
+\end{equation}
+where $P_{j}$ is power constraint of BS-$j$, $\alpha_{j,k}$ is used to denote different user rate priorities, $\eta_{j}$ denotes the target EE of BS-$j$, in unit of Nat/s/Joule. It is well known that the WSRMax problem is generally a difficult (in fact NP-hard) problem. Finding its global optimal usually requires extremely high computational complexity. With the newly introduced EE constraints, the problem~(\ref{EngergyEfficientContraint5}) becomes more difficult. %Note that there also exists the feasibility issue in the optimization problem, which is similar to the power minimization problem subject to a given minimum target rate set in~\cite{TWCDAhrouj2010}. Throughout this paper, we assume that the set of target EEs is feasible\footnote{How to check the feasibility of the target EE is a hard work, here we only focus on finding a solution to the problem and would like to investigate the feasibility issue in our future work.}.
+
+\section*{\sc \uppercase\expandafter{\romannumeral3}. Solutions of Optimization Problems}
+
+
+\subsection*{A. MMSE Formulations and Problem Transformations}
+We treat interference as noise and consider linear equalizer strategy so that the estimated signal is given by $\hat{\bm{x}}_{j,k}=\bm{U}_{j,k}^{H}\bm{y}_{j,k}$, $\forall j,k$, where $\bm{U}_{j,k}$ denotes the receiver matrix at User-$\left(j,k\right)$. Then, the MSE of User-$\left(j,k\right)$ is calculated as
+
+\begin{equation}\label{EngergyEfficientContraint7}
+\begin{split}
+&\bm{E}_{j,k}=\mathbb{E}_{\bm{x},\bm{n}}\left\{\left(\hat{\bm{x}}_{j,k}-\bm{x}_{j,k}\right)
+\left(\hat{\bm{x}}_{j,k}-\bm{x}_{j,k}\right)^{H}\right\}\\
+=&\bm{U}_{j,k}^{H}\bm{J}_{j,k}\bm{U}_{j,k}-\bm{W}_{j,k}^{H}\bm{H}_{j,j,k}^{H}\bm{U}_{j,k}
+-\bm{U}_{j,k}^{H}\bm{H}_{j,j,k}\bm{W}_{j,k}+\bm{I},
+\end{split}
+\end{equation}
+where, $\bm{J}_{j,k}=\sum\limits_{m=1}^{K}\sum\limits_{n=1}^{I_{m}}\bm{H}_{m,j,k}\bm{W}_{m,n}
+\bm{W}_{m,n}^{H}\bm{H}_{m,j,k}^{H}+\sigma_{j,k}^{2}\bm{I}$. Fixing all the transmit beamformers and minimizing the MSE leads to the well-known MMSE receiver, i.e.,
+\begin{equation}\label{EngergyEfficientContraint8}
+\bm{U}_{j,k}^{opt}=\bm{J}_{j,k}^{-1}\bm{H}_{j,j,k}\bm{W}_{j,k}.
+\end{equation}
+and the corresponding MMSE is calculated as
+\begin{equation}\label{EngergyEfficientContraint9}
+\bm{E}_{j,k}^{mmse}=\bm{I}-\bm{W}_{j,k}^{H}\bm{H}_{j,j,k}^{H}\bm{J}_{j,k}^{-1}\bm{H}_{j,j,k}\bm{W}_{j,k}.
+\end{equation}
+\setcounter{TempEqCnt}{\value{equation}} %将当前公式序号 赋给TempEqCnt
+\setcounter{equation}{13} % 当前公式序号变为x，x等于长公式应有的序号减1.
+\begin{figure*}[hb]
+\hrulefill
+\begin{equation}\label{EngergyEfficientContraint14}
+\begin{split}
+&\min\limits_{\bm{W}}~\sum\limits_{j,k}\alpha_{j,k}\left(\sum\limits_{\left(m,n\right)\neq\left(j,k\right)}
+\left\|\bm{W}_{m,n}^{H}\bm{H}_{m,j,k}^{H}
+\bm{U}_{j,k}\tilde{\bm{S}}_{j,k}\right\|_{\mathcal{F}}^{2}
++\left\|\tilde{\bm{S}}_{j,k}-\bm{W}_{j,k}^{H}\bm{H}_{j,j,k}^{H}\bm{U}_{j,k}
+\tilde{\bm{S}}_{j,k}\right\|_{\mathcal{F}}^{2}\right)\\
+s.t.~&\sum\limits_{k=1}^{I_{j}}\alpha_{j,k}\left(\log|\bm{S}_{j,k}|+d_{j,k}\right)\geq
+\sum\limits_{k=1}^{I_{j}}\alpha_{j,k}\left(
+\sum\limits_{\left(m,n\right)\neq\left(j,k\right)}
+\left\|\bm{W}_{m,n}^{H}\bm{H}_{m,j,k}^{H}
+\bm{U}_{j,k}\tilde{\bm{S}}_{j,k}\right\|_{\mathcal{F}}^{2}
++\left\|\tilde{\bm{S}}_{j,k}-\bm{W}_{j,k}^{H}\bm{H}_{j,j,k}^{H}\bm{U}_{j,k}
+\tilde{\bm{S}}_{j,k}\right\|_{\mathcal{F}}^{2}\right)\atop
++\sum\limits_{k=1}^{I_{j}}\left\|\sqrt{\eta_{j}\varpi_{j}}\bm{W}_{j,k}\right\|_{\mathcal{F}}^{2}
++\sum\limits_{k=1}^{I_{j}}\alpha_{j,k}Tr\left(\bm{S}_{j,k}\bm{U}_{j,k}^{H}\bm{U}_{j,k}\right)
++\eta_{j}M_{j}P_{c}+\eta_{j}P_{0},~\forall j,~\sum\limits_{k=1}^{I_{j}}\left\|\bm{W}_{j,k}\right\|_{\mathcal{F}}^{2}\leq P_{j},~\forall j,
+\end{split}
+\end{equation}
+\hrulefill
+\end{figure*}
+
+To solve the nonconvex WSRMax problem (\ref{EngergyEfficientContraint5}), here we transformed firstly it into an equivalent optimization problem that possesses some pleasant properties by exploiting the relations between the user rate and the MMSE~\cite{TWCChristensen2008,TSPShi2011}. By introducing an auxiliary matrix $\bm{S}_{j,k}\in\mathbb{C}^{d_{j,k}\times d_{j,k}}$ for User-$\left(j,k\right)$, $\forall j,k$. Let $\bm{U}$ and $\bm{S}$ denote the collection of all receiver matrices and the collection of all auxiliary matrices, respectively.
+\begin{proposition}\label{EngergyEfficientContraintPro01}
+The problem (\ref{EngergyEfficientContraint5}) is equivalent to the following weighted sum MSE optimization problem with EE constraints.
+\setcounter{equation}{\value{TempEqCnt}}
+\begin{equation}\label{EngergyEfficientContraint10}
+\begin{split}
+&\max_{\bm{W},\bm{U},\bm{S}}~\sum\limits_{j=1}^{K}\sum\limits_{k=1}^{I_{j}}\alpha_{j,k}h_{j,k}
+\left(\bm{W},\bm{U},\bm{S}\right)\\
+~s.t.~&\frac{\sum_{k=1}^{I_{j}}\alpha_{j,k}h_{j,k}\left(\bm{W},\bm{U},\bm{S}\right)}
+{g_{j}\left(\bm{W}\right)}\geq \eta_{j}, \forall j,\\
+& \sum\limits_{k=1}^{I_{j}}Tr\left(\bm{W}_{j,k}\bm{W}_{j,k}^{H}\right)\leq P_{j},\forall j,
+\end{split}
+\end{equation}
+where $h_{j,k}\left(\bm{W},\bm{U},\bm{S}\right)$ and $g_{j}\left(\bm{W}\right)$ are respectively given by
+\begin{subnumcases}{\label{EngergyEfficientContraint11}}
+h_{j,k}\left(\bm{W},\bm{U},\bm{S}\right)=-Tr\left(\bm{S}_{j,k}\bm{E}_{j,k}\right)+\log|\bm{S}_{j,k}|+d_{j,k},\\
+g_{j}\left(\bm{W}\right)=\varpi_{j}\sum_{k=1}^{I_{j}}Tr\left(\bm{W}_{j,k}\bm{W}_{j,k}^{H}\right)
++M_{j}P_{c}+P_{0}.
+\end{subnumcases}
+\end{proposition}
+\begin{proof}
+Notice that $h_{j,k}\left(\bm{W},\bm{U},\bm{S}\right)$ is concave in each of the optimization variables $\bm{U}$, $\bm{S}$, and $\bm{W}$, and $g_{j}\left(\bm{W}\right)$ is convex with respect to variables $\bm{W}$. Therefore, problem~(\ref{EngergyEfficientContraint10}) is a convex problem in terms of each of the variables $\bm{U}$, $\bm{S}$, and $\bm{W}$ while is not joint convex problem in all variables. From~(\ref{EngergyEfficientContraint7}) and~(\ref{EngergyEfficientContraint11}), it is not difficult to find that the optimization variables $\bm{U}_{j,k}$ and $\bm{S}_{j,k}$ only work for the function $h_{j,k}\left(\bm{W},\bm{U},\bm{S}\right)$. Furthermore, the optimal $\bm{U}_{j,k}$ for problem~(\ref{EngergyEfficientContraint10}) is given by $\bm{U}_{j,k}^{opt}$ in~(\ref{EngergyEfficientContraint8}) since $\bm{U}_{j,k}^{opt}$ minimizes the MSE of User-$\left(j,k\right)$, $\forall j, k$, i.e., maximizes the objective function of problem~(\ref{EngergyEfficientContraint10}). In addition, fixing the other variables, the objective function in (\ref{EngergyEfficientContraint10}) is concave with respect to $\bm{S}_{j,k}$. The partial Lagrangian of problem~(\ref{EngergyEfficientContraint10}) with respect to $\bm{S}_{j,k}$ is given by
+\begin{equation}\label{EngergyEfficientContraint022}
+\begin{split}
+&\mathfrak{L}\left(\bm{W},\bm{U},\bm{S}\right)=\sum\limits_{j=1}^{K}\sum\limits_{k=1}^{I_{j}}\alpha_{j,k}h_{j,k}
+\left(\bm{W},\bm{U},\bm{S}\right)\\
+&+\sum\limits_{j=1}^{K}\lambda_{j}\left(\sum\limits_{k=1}^{I_{j}}\alpha_{j,k}h_{j,k}\left(\bm{W},\bm{U},\bm{S}\right)-
+\eta_{j}g_{j}\left(\bm{W}\right)\right)
+\end{split}
+\end{equation}
+where $\lambda_{j}$ is the Lagrange multipliers associated with the EE constraint, $\forall j$. By checking the first order optimality condition for $\bm{S}_{j,k}$, we get
+\begin{equation}\label{EngergyEfficientContraint023}
+\bm{S}_{j,k}^{opt}=\bm{E}_{j,k}^{-1}=\left(\bm{E}_{j,k}^{mmse}\right)^{-1}
+\end{equation}
+Plugging the optimal $\bm{U}_{j,k}$ and $\bm{S}_{j,k}$ in $h_{j,k}\left(\bm{W},\bm{U},\bm{S}\right)$, we have
+\begin{equation}\label{EngergyEfficientContraint021}
+\begin{split}
+&h_{j,k}\left(\bm{W},\bm{U},\bm{S}\right)=\log\left|\left(\bm{E}_{j,k}^{mmse}\right)^{-1}\right|\\
+&=\log\left|\left(\bm{I}-\bm{W}_{j,k}^{H}\bm{H}_{j,j,k}^{H}\bm{J}_{j,k}^{-1}\bm{H}_{j,j,k}\bm{W}_{j,k}\right)^{-1}\right|\\
+&=\log \left|\bm{I}+\bm{H}_{j,j,k}\bm{W}_{j,k}\bm{W}_{j,k}^{H}\bm{H}_{j,j,k}^{H}
+\bm{R}_{j,k}^{-1}\right|=r_{j,k}
+\end{split}
+\end{equation}
+%\begin{equation}\label{EngergyEfficientContraint021}
+%\begin{split}
+%&h_{j,k}\left(\bm{W},\bm{U},\bm{S}\right)=\log\left|\left(\bm{E}_{j,k}^{mmse}\right)^{-1}\right|\\
+%&=\log \left|\bm{I}+\bm{H}_{j,j,k}\bm{W}_{j,k}\bm{W}_{j,k}^{H}\bm{H}_{j,j,k}^{H}
+%\bm{R}_{j,k}^{-1}\right|=r_{j,k}
+%\end{split}
+%\end{equation}
+where where the first equality follows from applying the Woodbury matrix identity and the second equality is due to the fact that $\log \left|\bm{I}+\bm{A}\bm{B}\right|=\log \left|\bm{I}+\bm{B}\bm{A}\right|$. Thus, we can obtain the original problem~(\ref{EngergyEfficientContraint5}) by substituting~(\ref{EngergyEfficientContraint021}) into~(\ref{EngergyEfficientContraint10}).
+%the equality follows from applying jointly the Woodbury matrix identity and $\log \left|\bm{I}+\bm{A}\bm{B}\right|=\log \left|\bm{I}+\bm{B}\bm{A}\right|$.
+\end{proof}
+\begin{proposition}\label{EngergyEfficientContraintPro02}
+For given $\bm{U}$ and $\bm{S}$, problem~(\ref{EngergyEfficientContraint10}) with respect to $\bm{W}$ is equivalent to problem~(\ref{EngergyEfficientContraint14}), at the bottom of this page.
+\end{proposition}
+\begin{proof}
+For fixed $\bm{U}$ and $\bm{S}$, recalling the positive semi-definitive of matrix $\bm{S}_{j,k}$, problem~(\ref{EngergyEfficientContraint10}) can be reformulated as the equivalent form~(\ref{EngergyEfficientContraint14}), at the bottom of this page, through some simple arithmetic operations where $\tilde{\bm{S}}_{j,k}=\bm{S}_{j,k}^{\frac{1}{2}}$ and $\left\|\bm{A}\right\|$ denotes the Frobenius norm of matrix $\bm{A}$.
+%\begin{figure*}[ht]
+%\hrulefill
+%\begin{equation}\label{EngergyEfficientContraint14}
+%\begin{split}
+%&\min\limits_{\bm{W}}~\sum\limits_{j,k}\alpha_{j,k}\left(\sum\limits_{\left(m,n\right)\neq\left(j,k\right)}
+%\left\|\bm{W}_{m,n}^{H}\bm{H}_{m,j,k}^{H}
+%\bm{U}_{j,k}\tilde{\bm{S}}_{j,k}\right\|_{\mathcal{F}}^{2}
+%+\left\|\tilde{\bm{S}}_{j,k}-\bm{W}_{j,k}^{H}\bm{H}_{j,j,k}^{H}\bm{U}_{j,k}
+%\tilde{\bm{S}}_{j,k}\right\|_{\mathcal{F}}^{2}\right)\\
+%s.t.~&\sum\limits_{k=1}^{I_{j}}\alpha_{j,k}\left(\log|\bm{S}_{j,k}|+d_{j,k}\right)\geq
+%\sum\limits_{k=1}^{I_{j}}\alpha_{j,k}\left(
+%\sum\limits_{\left(m,n\right)\neq\left(j,k\right)}
+%\left\|\bm{W}_{m,n}^{H}\bm{H}_{m,j,k}^{H}
+%\bm{U}_{j,k}\tilde{\bm{S}}_{j,k}\right\|_{\mathcal{F}}^{2}
+%+\left\|\tilde{\bm{S}}_{j,k}-\bm{W}_{j,k}^{H}\bm{H}_{j,j,k}^{H}\bm{U}_{j,k}
+%\tilde{\bm{S}}_{j,k}\right\|_{\mathcal{F}}^{2}\right)\atop
+%+\sum\limits_{k=1}^{I_{j}}\left\|\sqrt{\eta_{j}\varpi_{j}}\bm{W}_{j,k}\right\|_{\mathcal{F}}^{2}
+%+\sum\limits_{k=1}^{I_{j}}\alpha_{j,k}Tr\left(\bm{S}_{j,k}\bm{U}_{j,k}^{H}\bm{U}_{j,k}\right)
+%+\eta_{j}M_{j}P_{c}+\eta_{j}P_{0},~\forall j,~\sum\limits_{k=1}^{I_{j}}\left\|\bm{W}_{j,k}\right\|_{\mathcal{F}}^{2}\leq P_{j},~\forall j,
+%\end{split}
+%\end{equation}
+%\hrulefill
+%\end{figure*}
+\end{proof}
+
+Based on the Proposition~\ref{EngergyEfficientContraintPro01} and~\ref{EngergyEfficientContraintPro02}, problem~(\ref{EngergyEfficientContraint5}) can be transformed into tractable problem~(\ref{EngergyEfficientContraint10}) which processes some pleasant properties. Furthermore, it is easily seen that problem~(\ref{EngergyEfficientContraint14}) is a classical SOCP problem that can be solved~\cite{BookBertsekas2003}.
+
+\subsection*{B. Algorithm Design}
+
+In this subsection, we propose to an efficient algorithm  to solve problem~(\ref{EngergyEfficientContraint10}) based on the block coordinate ascent method~\cite{BookBertsekas2003}. Specifically, the problem~(\ref{EngergyEfficientContraint10}) is solved by sequentially fixing two of the three variables  $\bm{U}$, $\bm{S}$, $\bm{W}$, and updating the third. For a given transmit precoding matrices $\bm{W}$, the update of receive matrix $\bm{U}_{j,k}$ is given by ~(\ref{EngergyEfficientContraint8}) and the update of the auxiliary weight matrix is given by~(\ref{EngergyEfficientContraint023}). Meanwhile, for a given $\bm{U}$ and $\bm{S}$, the transmit precoders can be updated by solving problem~(\ref{EngergyEfficientContraint14}) with the SOCP method. Thus, an iterative optimization algorithm is summarized as Algorithm~\ref{EnergyEfficientAlgorithm:Solution} to solve problem~(\ref{EngergyEfficientContraint10}).
+\begin{algorithm}
+\caption{WSRMax with EE Constraints}\label{EnergyEfficientAlgorithm:Solution}
+\begin{algorithmic}[1]
+\STATE Let $n=0$, $r^{(n)}=0$. Choose the initial precoding matrices $\bm{W}^{(n)}$ such that satisfying these constraints, compute the receiver filters $\bm{U}^{(n)}$ and the auxiliary variables $\bm{S}^{(n)}$.\label{Solution_Initialization}
+\STATE Solve problem~(\ref{EngergyEfficientContraint14}) with $\bm{U}^{(n)}$ and $\bm{S}^{(n)}$, and obtain $\bm{W}^{(n+1)}$, update $\bm{U}$ and $\bm{S}$ with~(\ref{EngergyEfficientContraint8}),~(\ref{EngergyEfficientContraint023}), and $\bm{W}^{(n+1)}$, obtain $\bm{U}^{(n+1)}$ and $\bm{S}^{(n+1)}$, respectively.\label{Solution_Upadted}
+\STATE Compute the sum rate $r^{(n+1)}$ using $\bm{W}^{(n+1)}$, $\bm{U}^{(n+1)}$, and $\bm{S}^{(n+1)}$. If $|r^{(n+1)}-r^{(n)}|\leq\xi$, where $\xi$ is predefined threshold, and output $\bm{W}^{(n+1)}$, $\bm{U}^{(n+1)}$, and $\bm{S}^{(n+1)}$. Otherwise, let $n=n+1$ and go to step~\ref{Solution_Upadted}
+\end{algorithmic}
+\end{algorithm}
+
+\textbf{Remark:} Note that there also exists the feasibility issue in the optimization problem, which is similar to the power minimization problem subject to a given minimum target rate set in~\cite{TWCDAhrouj2010}. Throughout this paper, we assume that the set of target EEs is feasible\footnote{How to check the feasibility of the target EE is a hard work, here we only focus on finding a solution to the problem and would like to investigate the feasibility issue in our future work.}. Let $\overline{\eta}_{j}$ denotes the EE of cell $j$ achieved by the WSRMax algorithm. It is easy to see that problem~(\ref{EngergyEfficientContraint5}) is equivalent to the WSRMax problem if $\overline{\eta}_{j}\geq\eta_{j}$, $\forall j$. Otherwise, in order to improve the per-cell EE, we need to adjust the beamformers and power allocation that may result in the reduction of the SE and obtain then the tradeoff between the EE and SE. Interestingly, our simulation results show that for a feasible EE $\bm{\eta}$, solving our problem~(\ref{EngergyEfficientContraint5}) usually yields that the achieved EE $\bm{\eta}^{*}$ that satisfy the per-cell EE constraints, i.e., $\eta_{j}^{*}\geq\eta_{j}, \forall j$. This means that in the box range $[\bm{\eta}, \bm{\eta}^{*}]$ the SE and EE both increase, while the SE will decrease when one further increases the EE over $\bm{\eta}^{*}$. Also, note that our proposed algorithm may obtain a suboptimal solution due to the nonconvex nature of the formulated problem. To the best our knowledge, how to obtain the optimal solution of problem~(\ref{EngergyEfficientContraint5}) is still an open problem.
+\begin{lemma}
+The sequence generated by Algorithm~\ref{EnergyEfficientAlgorithm:Solution} guarantees to converge to a stationary point of problem~(\ref{EngergyEfficientContraint10}).
+\end{lemma}
+\begin{proof}
+It is easily seen that the updates of step~\ref{Solution_Upadted} in Algorithm~\ref{EnergyEfficientAlgorithm:Solution} all aim to increase the sum rate so that an increasing sequence is generated while the iteration running. Since the achievable SINR region under the transmit power constraint is bounded, the sum rate is also bounded. The convergence of Algorithm~\ref{EnergyEfficientAlgorithm:Solution} is guaranteed by the monotonic convergence theorem~\cite{SIAMSolodov1998,Bibby1974}. Note that the optimization problem~(\ref{EngergyEfficientContraint10}) has a differentiable objective function and the EE constraints and transmit power constraints only work for variable~$\bm{W}_{j,k}$, $\forall j,k$ as shown in the proof process of Proposition~\ref{EngergyEfficientContraintPro01}. In other words, we can regard that there is no constraint on the variables $\bm{U}$ and $\bm{S}$, and only the variable $\bm{W}$ is constrained. It follows from the general optimization theory~\cite{SIAMSolodov1998,Bibby1974} that Algorithm~\ref{EnergyEfficientAlgorithm:Solution}, which is a block coordinate ascent method applied to problem~(\ref{EngergyEfficientContraint10}), converges to a stationary point of problem~(\ref{EngergyEfficientContraint10}).
+\end{proof}
+
+\section*{\sc \uppercase\expandafter{\romannumeral4}. Simulation Results}
+
+In this section, the performance of the proposed multicell beamforming scheme is investigated via numerical simulations. We consider a cooperative cluster of $K=3$ hexagonal adjacent cells each consisting of one BS and multiple users. The cell radius is set to be $500$-m and each user locates randomly at the cell edge (each user has a least $400$-m distance from its serving BS in our simulation settings). The circuit power per antenna is $P_{c}=30$ dBm, and the basic power consumed at the BS is $P_{0}=40$ dBm~\cite{TWCNg2013}. The flat fading channel matrix $\bm{H}_{m,j,k}$ from BS-$m$ to User-$\left(j,k\right)$ is generated based on  $\bm{H}_{m,j,k}\triangleq\sqrt{\theta_{m,j,k}}\bm{H}_{m,j,k}^{w}$, where $\bm{H}_{m,j,k}^{w}$ denotes the small scale fading channel matrix whose entries follow independent and identical Gaussian distributions with zero mean and unit covariance, and $\theta_{m,j,k}$ denotes the large scale fading factor which in decibels is given as $10\log_{10}(\theta_{m,j,k})=-38\log_{10}(d_{m,j,k})-34.5+\eta_{m,j,k}$, where $d_{m,j,k}$ denotes the distance between BS-$m$ and User-$\left(j,k\right)$ in unit of meter, $\eta_{m,j,k}$ represents the log-normal shadow fading with zero mean and standard deviation $8$ dB. We assume that the cell BSs use the same EE theshold $\eta$. The transmit power budget is set to $P$ for each BS and the SNR in simulations is defined as the transmit power in decibel, i.e., $\rm{SNR}=10\log_{10}\rm{P}$. The weighted factors $\alpha_{j,k}$, and $\varpi_{j}$ are unity for $\forall j, k$. The convergence threshold $\xi$ is set to be $10^{-3}$.
+
+Fig.~\ref{ConvergenceTrajectory} shows the convergence trajectory of the proposed algorithm over a few random channel realizations with random initializing beamforming matrices, where $\eta=0.02$ bit/s/Joule. One can observe that Algorithm~\ref{EnergyEfficientAlgorithm:Solution} converges rapidly to stationary point with about $6-7$ iterations and a monotonic nondecreasing sequence is generated by Algorithm~\ref{EnergyEfficientAlgorithm:Solution}.
+\begin{figure}[htbp]%here,top, bottom,page
+\centering
+\captionstyle{flushleft}
+\onelinecaptionstrue
+\includegraphics[width=1\columnwidth,keepaspectratio]{ConvergenceTrajectory.eps}\\
+\caption{The Convergence Trajectory of Algorithm~\ref{EnergyEfficientAlgorithm:Solution}, $M_{j}=4$, $N_{j,k}=d_{j,k}=1$, $I_{j}=2$, $\forall j, k$.}
+\label{ConvergenceTrajectory}
+\end{figure}
+
+Fig.~\ref{EnergyEfficientVaryPower} displays the average sum rate performance and the average system EE performance of the proposed algorithm and the conventional WSRMax algorithm that considers only the transmit power constraints over $1000$ random channel realizations. The per-cell EE target value is set to be the ratio of the per-cell weighted sum rate to the per-cell power consumption needed to achieve $80\%$ ($90\%$) of the rate obtained by the WSRMax algorithm\footnote{For a given set of target rate requirements, the beamformer initialization can be realized by solving a power minimization problem subject to the target user rate requirements and per-BS power constraints.}. It can be seen that the two algorithms achieve the same sum rate and EE performance in the lower transmit power region due to the small EE target requirements. While in the middle-high transmit power region, compared with the conventional WSRMax algorithm, our proposed algorithm obtain an apparent EE performance gain up to $36.01\%$ ($20.18\%$), at the cost of a moderate sum rate loss up to $16.76\%$ ($8.35\%$). It indicates that our algorithm achieves the SE-EE tradeoff with an acceptable SE loss but guaranteeing a certain EE target demand and improving the EE performance.
+\begin{figure}[htbp]%here,top, bottom,page
+\centering
+\captionstyle{flushleft}
+\onelinecaptionstrue
+\includegraphics[width=1\columnwidth,keepaspectratio]{EnergyEfficientVaryPower.eps}\\
+\caption{The Performance Analysis of Algorithm~\ref{EnergyEfficientAlgorithm:Solution} and WSRMax Algorithm, $M_{j}=4$, $N_{j,k}=d_{j,k}=1$, $I_{j}=2$, $\forall j, k$.}
+\label{EnergyEfficientVaryPower}
+\end{figure}
+
+Fig.~\ref{EnergyEfficientVaryAntenna} illustrates the average sum rate performance and the average system EE performance of the proposed algorithm and the conventional WSRMax algorithm over $1000$ random channel realizations. It can be seen that the EE performances of the proposed algorithm and the WSRMax algorithm increases with the number of transmit antennas $M_{j}$. However, when $M_{j}>16, \forall j$,  the EE and SE performances of the proposed algorithm and the WSRMax algorithm decreases when the number of transmit antennas $M_{j}$ increases. This is becausethe circuit power consumption $M_{j}P_{c}$ also increases rapidly when the number of transmit antenna $M_{j}$ increases. It means that there is an optimal number of transmit antennas when the numbers of served user, receiver antennas and data streams are fixed, for example the optimal number of per-BS transmit antennas in our system model is $16$.
+\begin{figure}[htbp]%here,top, bottom,page
+\centering
+\captionstyle{flushleft}
+\onelinecaptionstrue
+\includegraphics[width=1\columnwidth,keepaspectratio]{EnergyEfficientVaryAntenna.eps}\\
+\caption{The Performance Analysis of Algorithm~\ref{EnergyEfficientAlgorithm:Solution} and WSRMax Algorithm, $N_{j,k}=d_{j,k}=1$, $I_{j}=2$, $\forall j, k$.}
+\label{EnergyEfficientVaryAntenna}
+\end{figure}
+
+\section*{\sc \uppercase\expandafter{\romannumeral5}. Conclusions}
+
+In this letter, a new WSRMax problem with EE constraints was investigated to consider the performance metrics of both the SE and EE. To find the solution of this nonconvex problem,  we first transformed it into a weighted polynomial optimization problem by introducing some auxiliary variables. Then, an optimization algorithm with the provable convergence was proposed by exploiting the concave nature of the equivalent problem with respect to each optimization variable. Numerical results were finally provided to verify the effectiveness of the proposed algorithm in terms of both the SE and EE performances.
+
+
+\begin{small}
+\begin{thebibliography}{30}
+\bibitem{MagRusek2013}F. Rusek, D. Persson, B. Lau, E. Larsson, T. Marzetta, O. Edfors, and F. Tufesson ``Scaling up MIMO: Opportunities and challenges with very lare arrays," \emph{IEEE Sig. Proc. Mag.,} pp. 40-60, Jan. 2013.
+%\bibitem{TWCHuang2012}Y. Huang, G. Zheng, M. Bengtsson, K. Wong, L. Yang, and B. Ottersten, ``Distributed multicell beamforming design approaching pareto boundary with max-min fairness," \emph{IEEE Trans. Wireless Commun.,} vol. 11, no. 8, pp. 2921-2933, Aug. 2012.
+\bibitem{TWCChristensen2008}S. Christensen, R. Agarwal, E. Carvalho, and J. Cioffi, ``Weighted sum rate maximization using weighted MMSE for MIMO-BC beamforming design," \emph{IEEE Trans. Wireless Commun.,} vol. 7, no. 12, pp. 4792-4799, 2008.
+\bibitem{TSPShi2011}Q. Shi, M. Razaviyayn, Z. Luo, and C. He, ``An iteratively weighted MMSE approach to distributed sum-utility maximization for a MIMO interfering broadcast channel," \emph{IEEE Trans. Sig. Proc.}, vol. 59, no.9, pp. 4331-4340, Sep. 2011.
+
+\bibitem{TSPWeerad2013} P. Weeraddana, M. Codreanu, M. Latva-aho, and A. Ephremides, ``Multicell MISO downlink weighted sum-rate maximization: a distributed approach," \emph{IEEE Trans. Sig. Proc.,} vol. 61, no. 3, pp. 556-570, Feb. 2013.
+
+\bibitem{SurverFeng2013}D. Feng, C. Jiang, G. Lim, L. Cimini, Jr., G. Feng, and G. Li, ``A survey of energy-efficient wireless communications," \emph{IEEE Commun. Surveys \& Tutorials,} vol. 15, no. 1, pp. 167-178, First Quar. 2013.
+\bibitem{TWCNg2012}D. Ng, E. Lo, and R. Schober, ``Energy-efficient resource allocation in multi-cell OFDMA systems with limited backhaul capacity," \emph{IEEE Trans. Wireless Commun.}, vol. 11, no. 10, pp. 3618-3631, Oct. 2012.
+\bibitem{TWCNg2013}D. Ng, E. Lo, and R. Schober, ``Energy-efficient resource allocation in OFDMA systems with hybrid energy harvesting base station," \emph{IEEE Trans. Wireless Commun.}, vol. 12, no. 7, pp. 3412-3427, Jul. 2013.
+\bibitem{ICCPrabu2010}R. Prabhu, B. Daneshrad, ``An energy-efficient water-filling algorithm for OFDM systems," \emph{IEEE International Conference on Communications (ICC),} pp. 1-5, 23-27, May 2010.
+\bibitem{TWCXiong2013}C. Xiong, G. Li, Y. Liu, Y. Chen, and S. Xu, ``Energy-efficient design for downlink OFDMA with delay-sensitive traffic," \emph{IEEE Trans. Wireless Commun.}, vol. 12, no. 6, pp. 3085-3095, Jun. 2013.
+\bibitem{PIMRCLi2013}Y. Li, Y. Tian, and C. Yang, ``Energy-efficient coordinated beamforming with individual data rate constraints," in \emph{Proceedings of PIMRC.}, Sep. 8-11, 2013.
+
+\bibitem{TCOMHe2013}S. He, Y. Huang, S. Jin, and L. Yang, ``Coordinated beamforming for energy efficient transmission in multicell multiuser systems," arXiv preprint arXive: 1310.2037, 2013. %\emph{IEEE Trans. Commun.}, 2013.
+
+\bibitem{BookBertsekas2003}D. Bertsekas, Nonlinear Programming, 2nd ed. Belmont, Mass.: Athena Scientific, 2003.
+
+\bibitem{TWCDAhrouj2010}H. Dahrouj and W. Yu, ``Coordinated beamforming for the multicell multi-antenna wireless system," \emph{IEEE Trans. Wireless Commun.,} vol. 9, no. 5, pp. 1748-1759, May 2010.
+\bibitem{SIAMSolodov1998}M. Solodov, ``On the convergence of constrained parallel variable distribution algorithm," \emph{SIAM J. Optim.,} vol. 8, no. 1, pp. 187-196, Feb. 1998.
+\bibitem{Bibby1974}J. Bibby, ``Axiomatisations of the average and a further generalisation of monotonic sequences," \emph{Glasgow Mathematical Journal}, vol. 15, pp. 63-65, 1974.
+\end{thebibliography}
+\end{small}
+%\begin{figure}
+%\centering
+%\captionstyle{flushleft}
+%\onelinecaptionstrue
+%\subfigure[Channel Realization I]{
+%\label{Fig.sub.1}
+%\includegraphics[width=0.8\columnwidth]{ConvergenceTrajectory.eps}}
+%\subfigure[Channel Realization II]{
+%\label{Fig.sub.2}
+%\includegraphics[width=0.8\columnwidth]{EnergyEfficientVaryPower.eps}}
+%\caption{Pareto Boundary of energy efficient rates, $K=2$, $M=4$, $\varepsilon=10^{-3}$.}
+%\label{ParetoBoundary}
+%\end{figure}
+
+
+
+\end{document}
